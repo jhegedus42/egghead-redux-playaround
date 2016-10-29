@@ -3,12 +3,16 @@ import styles from './index.scss';
 import React from 'react';
 import deepFreeze from 'deepfreeze'
 import expect from 'expect'
+var _ = require('lodash')
 
 
 const todos = (state=[], action) =>{
       switch (action.type){
         case 'ADD_TODO' : return [ ...state,
           { id:action.id, text:action.text, completed: false}];
+        case 'TOGGLE_TODO': return _.map(state,
+          (todo) => {if (todo.id !== action.id) {return todo;}
+                     return {...todo,completed:!todo.completed}})
         default :
           return state;
       }
@@ -35,8 +39,50 @@ const testAddTodo = () => {
   expect( todos(stateBefore, action )).toEqual(stateAfter) ;
 }
 
+const testToggleTodo = () => {
+          const stateBefore = [
+            {
+              id:0,
+              text:'Learn Redux',
+              completed:false
+            },
+            {
+              id:1,
+              text:'Go tripping',
+              completed:false
+            }
+          ];
+
+          const action = {
+            type:'TOGGLE_TODO',
+            id:1
+          };
+
+          const stateAfter = [
+            {
+              id:0,
+              text:'Learn Redux',
+              completed:false
+            },
+            {
+              id:1,
+              text:'Go tripping',
+              completed:true
+            }
+          ];
+          deepFreeze(stateBefore);
+          deepFreeze(action);
+          expect(todos(stateBefore,action)).toEqual(stateAfter)
+}
+
+const a={bela:'42',eves:false}
+console.log(a)
+console.log({...a,eves:true})
+
 testAddTodo();
+testToggleTodo();
 console.log('All  tests passed')
+
 
 export default class App extends React.Component {
   render() {

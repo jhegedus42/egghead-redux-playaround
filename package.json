@@ -16,7 +16,9 @@
   "license": "MIT",
   "homepage": "https://github.com/alicoding/react-webpack-babel#readme",
   "dependencies": {
+    "babel-plugin-transform-object-rest-spread": "^6.16.0",
     "bootstrap": "^4.0.0-alpha.3",
+    "lodash": "^4.16.4",
     "node-sass": "^3.10.1",
     "react": "15.3.2",
     "react-dom": "15.3.2",
