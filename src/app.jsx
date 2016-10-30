@@ -5,16 +5,21 @@ import deepFreeze from 'deepfreeze'
 import expect from 'expect'
 var _ = require('lodash')
 
+const todo = (todo, action) => {
+  switch (action.type){
+      case 'ADD_TODO' :
+          return { id:action.id, text:action.text, completed: false};
+      case 'TOGGLE_TODO':
+        if (todo.id !== action.id) {return todo;}
+          return {...todo,completed:!todo.completed};
+  }
+}
 
 const todos = (state=[], action) =>{
       switch (action.type){
-        case 'ADD_TODO' : return [ ...state,
-          { id:action.id, text:action.text, completed: false}];
-        case 'TOGGLE_TODO': return _.map(state,
-          (todo) => {if (todo.id !== action.id) {return todo;}
-                     return {...todo,completed:!todo.completed}})
-        default :
-          return state;
+        case 'ADD_TODO' : return [ ...state, todo(undefined, action)];
+        case 'TOGGLE_TODO': return _.map(state, (td) => todo(td, action));
+        default : return state;
       }
 };
 
