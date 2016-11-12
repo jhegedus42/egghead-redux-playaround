@@ -1,27 +1,75 @@
+// @flow
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from './index.scss';
 import React from 'react';
+import { createStore } from 'redux'
 import deepFreeze from 'deepfreeze'
 import expect from 'expect'
 var _ = require('lodash')
 
-const todo = (todo, action) => {
-  switch (action.type){
-      case 'ADD_TODO' :
-          return { id:action.id, text:action.text, completed: false};
-      case 'TOGGLE_TODO':
-        if (todo.id !== action.id) {return todo;}
-          return {...todo,completed:!todo.completed};
+type State$Todo = {
+  text:string;
+  completed:boolean;
+  id:number;
+};
+
+class Todo {
+  static make(t:string,id:number):State$Todo{
+    return {text:t,id:id,completed:false}
   }
+  static toggle(t:State$Todo):State$Todo {
+    return {...t, completed:!t.completed};
+  }
+};
+
+
+type Action$VisibilityFilter = {
+     type:'SET_VISIBILITY_FILTER',
+     filter:State$VisibilityFilter
+};
+
+type Action$ADD_TODO = {
+  type:'ADD_TODO',
+  text:string,
+  id:number
+};
+
+type Action$TOGGLE_TODO = {type:'TOGGLE_TODO', id:number }
+
+type Action$Todo = Action$ADD_TODO | Action$TOGGLE_TODO
+
+type Action$App = Action$Todo | Action$VisibilityFilter
+
+type State$TodoList = State$Todo[];
+
+type State$VisibilityFilter = 'all' | 'done' | 'notdone'
+
+type State$App = {
+  todos:State$TodoList,
+  visibilityFilter:State$VisibilityFilter
 }
 
-const todos = (state=[], action) =>{
+const todosReducer = (state: State$TodoList=[], action: Action$App) =>{
       switch (action.type){
-        case 'ADD_TODO' : return [ ...state, todo(undefined, action)];
-        case 'TOGGLE_TODO': return _.map(state, (td) => todo(td, action));
+        case 'ADD_TODO' : return [ ... state, Todo.make(action.text, action.id)];
+        case 'TOGGLE_TODO':
+          const id=action.id;
+          return  _.map(state, (td) => (td.id==id) ? Todo.toggle(td) : td );
         default : return state;
       }
 };
+
+const visibilityFilterReducer = (state:State$VisibilityFilter, action:Action$App) =>  {
+  switch(action.type) {
+    case 'SET_VISIBILITY_FILTER':
+      return action.filter;
+    default : return state;
+  }
+}
+
+const todoApp = (state : State$App = {todos:[],visibilityFilter:'all'}, action: Action$App) => {
+  return { todos: todosReducer(state.todos, action), visibilityFilter: visibilityFilterReducer(state.visibilityFilter,action) };
+}
 
 const testAddTodo = () => {
   const stateBefore = [];
@@ -41,7 +89,7 @@ const testAddTodo = () => {
 
   deepFreeze(stateBefore);
   deepFreeze(action);
-  expect( todos(stateBefore, action )).toEqual(stateAfter) ;
+  expect( todosReducer(stateBefore, action )).toEqual(stateAfter) ;
 }
 
 const testToggleTodo = () => {
@@ -77,8 +125,26 @@ const testToggleTodo = () => {
           ];
           deepFreeze(stateBefore);
           deepFreeze(action);
-          expect(todos(stateBefore,action)).toEqual(stateAfter)
+          expect(todosReducer(stateBefore,action)).toEqual(stateAfter)
 }
+
+const store = createStore (todoApp)
+
+store.dispatch({
+  type:'ADD_TODO',
+  id:0,
+  text:'Learn Redux'
+});
+
+console.log(store.getState());
+
+store.dispatch({
+  type: 'TOGGLE_TODO',
+  id:0
+})
+
+console.log(store.getState());
+
 
 const a={bela:'42',eves:false}
 console.log(a)
