@@ -46,7 +46,7 @@ type State$App = {
   visibilityFilter:State$VisibilityFilter
 }
 
-const todosReducer = (state: State$TodoList=[], action: Action$App) =>{
+const todosReducer = (state: State$TodoList=[], action: Action$App) :State$TodoList=>{
       switch (action.type){
         case 'ADD_TODO' : return [ ... state, Todo.make(action.text, action.id)];
         case 'TOGGLE_TODO':
@@ -56,7 +56,7 @@ const todosReducer = (state: State$TodoList=[], action: Action$App) =>{
       }
 };
 
-const visibilityFilterReducer = (state:State$VisibilityFilter, action:Action$App) =>  {
+const visibilityFilterReducer = (state:State$VisibilityFilter, action:Action$App) : State$VisibilityFilter =>  {
   switch(action.type) {
     case 'SET_VISIBILITY_FILTER':
       return action.filter;
@@ -64,7 +64,7 @@ const visibilityFilterReducer = (state:State$VisibilityFilter, action:Action$App
   }
 }
 
-const todoApp = (state : State$App = {todos:[],visibilityFilter:'all'}, action: Action$App) => {
+const todoApp = (state : State$App = {todos:[],visibilityFilter:'all'}, action: Action$App) : State$App => {
   return { todos: todosReducer(state.todos, action), visibilityFilter: visibilityFilterReducer(state.visibilityFilter,action) };
 }
 
@@ -125,23 +125,22 @@ const testToggleTodo = () => {
           expect(todosReducer(stateBefore,action)).toEqual(stateAfter)
 }
 
-const store = createStore (todoApp)
+const store  = createStore (todoApp)
 
-store.dispatch({
+store.dispatch(({
   type:'ADD_TODO',
   id:0,
   text:'Learn Redux'
-});
+}:Action$ADD_TODO));
 
 console.log(store.getState());
 
-store.dispatch({
+store.dispatch(({
   type: 'TOGGLE_TODO',
   id:0
-})
+}:Action$TOGGLE_TODO ))
 
 console.log(store.getState());
-
 
 const a={bela:'42',eves:false}
 console.log(a)
@@ -157,7 +156,7 @@ export default class App extends React.Component {
     return (
       <div>
         <h1>It Works!</h1>
-        <p>Global bootstrap css import wo   rks too as you can see on the following button.</p>
+        <p>Global bla bootstrap css import wo   rks too as you can see on the following button.</p>
       </div>
     )
   }
