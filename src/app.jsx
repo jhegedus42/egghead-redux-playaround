@@ -70,100 +70,9 @@ const todoApp = (state : State$App = {todos:[],visibilityFilter:'SHOW_ALL'}, act
 }
 
 //const todoApp =combineReducers({todos:todosReducer, visibilityFilter:visibilityFilterReducer})
-
-const testAddTodo = () => {
-  const stateBefore = [];
-  const action : Action$ADD_TODO = {
-    type: 'ADD_TODO',
-    id:0,
-    text: 'Learn Redux'
-  };
-  const stateAfter = [
-    {
-      id:0,
-      text: 'Learn Redux',
-      completed: false
-    }
-
-  ];
-
-  deepFreeze(stateBefore);
-  deepFreeze(action);
-  expect( todosReducer(stateBefore, action )).toEqual(stateAfter) ;
-}
-
-const testToggleTodo = () => {
-          const stateBefore = [
-            {
-              id:0,
-              text:'Learn Redux',
-              completed:false
-            },
-            {
-              id:1,
-              text:'Go tripping',
-              completed:false
-            }
-          ];
-
-          const action = {
-            type:'TOGGLE_TODO',
-            id:1
-          };
-
-          const stateAfter = [
-            {
-              id:0,
-              text:'Learn Redux',
-              completed:false
-            },
-            {
-              id:1,
-              text:'Go tripping',
-              completed:true
-            }
-          ];
-          deepFreeze(stateBefore);
-          deepFreeze(action);
-          expect(todosReducer(stateBefore,action)).toEqual(stateAfter)
-}
-
 const store  = createStore (todoApp)
 
-store.dispatch(({
-  type:'ADD_TODO',
-  id:0,
-  text:'Learn Redux'
-}:Action$ADD_TODO));
 
-console.log(store.getState());
-
-store.dispatch(({
-  type: 'TOGGLE_TODO',
-  id:0
-}:Action$TOGGLE_TODO ))
-
-console.log(store.getState());
-
-const a={bela:'42',eves:false}
-console.log(a)
-console.log({...a,eves:true})
-
-testAddTodo();
-testToggleTodo();
-console.log('All  tests passed')
-
-
-export default class App extends React.Component {
-  render() {
-    return (
-      <div>
-        <h1>It Works!</h1>
-        <p>Global bla bootstrap css import wo   rks too as you can see on the following button.</p>
-      </div>
-    )
-  }
-}
 
 type FilterLinkProps={
   filter:State$VisibilityFilter,
@@ -215,12 +124,34 @@ const getVisibleTodos = (
 }
 
 let nextTodoId = 0;
+const TodoReactElement=(props:{onClick:Function,completed:boolean,text:string}) =>(
+            <li onClick={props.onClick}
+                style ={{ textDecoration: props.completed ? 'line-through' : 'none'}} >
+                {props.text}
+            </li>
+);
+
+type TodoListReactComponentProps ={todos:State$TodoList,onTodoClick:Function}
+
+const TodoList =(props:TodoListReactComponentProps) =>(
+  <ul>
+    {props.todos.map( todo=>
+      <TodoReactElement
+        key ={todo.id}
+        completed={todo.completed}
+        onClick={()=> props.onTodoClick(todo.id)}
+        text= {todo.text} >
+      </TodoReactElement>)}
+  </ul>
+)
+
 
 class TodoApp extends React.Component {
   render() {
 
     const todos : State$TodoList= this.props.todos;
-    const visibilityFilter :State$VisibilityFilter= this.props.visibilityFilter;
+    const visibilityFilter :State$VisibilityFilter=
+          this.props.visibilityFilter;
     const visibleTodos :State$TodoList = getVisibleTodos(
       todos, visibilityFilter );
 
@@ -237,17 +168,9 @@ class TodoApp extends React.Component {
         }}>
           Add Todo
         </button>
-        <ul>
-          {visibleTodos.map(todo =>
-            <li key={todo.id}
-              onClick={()=>{store.dispatch( ({type:'TOGGLE_TODO', id:todo.id} : Action$TOGGLE_TODO)) }}
-              style ={{ textDecoration: todo.completed ? 'line-through' : 'none'}}
-            >
-              {todo.text + todo.id}
-            </li>
-          )}
-        </ul>
-
+        <TodoList todos={visibleTodos}
+                  onTodoClick={id=> store.dispatch(({type:'TOGGLE_TODO',id}:Action$TOGGLE_TODO))}>
+        </TodoList>
         <p>
           Show:
           {' '}
@@ -280,7 +203,8 @@ class TodoApp extends React.Component {
 const root   = document.getElementById('root')
 const render = () => {
   ReactDOM.render(
-    <TodoApp {...store.getState()} />,root
+    <TodoApp {...store.getState()} />,
+    root
   );
 };
 
