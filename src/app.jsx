@@ -72,22 +72,38 @@ const todoApp = (state : State$App = {todos:[],visibilityFilter:'SHOW_ALL'}, act
 //const todoApp =combineReducers({todos:todosReducer, visibilityFilter:visibilityFilterReducer})
 const store  = createStore (todoApp)
 
-type FilterLinkProps = {
-  filter:State$VisibilityFilter,
-  currentFilter:State$VisibilityFilter,
-  onClick:Function ,
-  children:React$Element<*>
-};
-
-const FilterLink =  (props:FilterLinkProps)  : React$Element<any> => {
-    if(props.filter===props.currentFilter) {
+//Link presentation component - does not know about the behaviour
+const Link = (props:{active:boolean,children:React$Element<*>,onClick:Function}) =>
+{
+    if(props.active) {
        return <span>{props.children}</span>
     }
     return (
-    <a href='#' onClick={e => { e.preventDefault(); props.onClick(props.filter); }} >
-    {props.children}
+    <a href='#' onClick={e => { e.preventDefault(); props.onClick(); }} >
+      {props.children}
     </a>
   );
+};
+
+class FilterLink  extends React.Component { // container component - provides data and behaviour for the used Link presentation component
+  componentDidMount() {
+    this.unsubscribe= store.subscribe(()=> this.forceUpdate());
+    // this is needed because if the parent component does not update when then
+    // store changes, this component would render a stale value
+  };
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+  render(){
+    const props = (this.props:{filter:State$VisibilityFilter,children:React$Element<*>});
+    const state = store.getState();
+    return (
+      <Link
+        active ={props.filter===state.visibilityFilter}
+        onClick = {()=> store.dispatch (({ type:'SET_VISIBILITY_FILTER', filter: props.filter }:Action$SetVisibilityFilter))}
+        children= {props.children} />  
+    )
+  };
 };
 
 const getVisibleTodos = ( todos:State$TodoList, filter:State$VisibilityFilter ) : State$TodoList => {
@@ -143,39 +159,17 @@ const AddTodo = (props:{onAddClick:Function}): React$Element<any> =>
   )
 }
 
-const Footer = (props:{visibilityFilter:State$VisibilityFilter, onFilterClick:Function}): React$Element<any> =>
+const Footer = (): React$Element<any> =>
 {
   return(
     <p>
       Show:
       {' '}
-
-      <FilterLink
-        filter='SHOW_ALL'
-        currentFilter={props.visibilityFilter}
-        onClick={props.onFilterClick}
-        children={<span>All</span>}
-        >
-      </FilterLink>
+      <FilterLink filter='SHOW_ALL' children={<span>All</span>} />
       {' '}
-
-      <FilterLink
-        filter='SHOW_ACTIVE'
-        currentFilter={props.visibilityFilter}
-        onClick={props.onFilterClick}
-        children={<span>Active</span>}
-        >
-      </FilterLink>
-
+      <FilterLink filter='SHOW_ACTIVE' children={<span>Active</span>} />
       {' '}
-      <FilterLink
-        filter='SHOW_COMPLETED'
-        currentFilter={props.visibilityFilter}
-        onClick={props.onFilterClick}
-        children={<span>Completed</span>}
-        >
-      </FilterLink>
-
+      <FilterLink filter='SHOW_COMPLETED' children={<span>Completed</span>}/>
     </p>
   )
 }
@@ -187,8 +181,7 @@ const TodoApp = ( props: State$App) :React$Element<any> => {
         <TodoList todos={ getVisibleTodos( props.todos, props.visibilityFilter ) }
                   onTodoClick={id=> store.dispatch(({type:'TOGGLE_TODO',id}:Action$TOGGLE_TODO))}>
         </TodoList>
-        <Footer visibilityFilter={props.visibilityFilter}
-                onFilterClick= {(filter:State$VisibilityFilter) => store.dispatch ( ({type:'SET_VISIBILITY_FILTER', filter}:Action$SetVisibilityFilter)) } >
+        <Footer visibilityFilter={props.visibilityFilter} >
         </Footer>
 
       </div>
