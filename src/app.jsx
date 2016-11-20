@@ -73,19 +73,37 @@ const todoApp = (state : State$App = {todos:[],visibilityFilter:'SHOW_ALL'}, act
 const store  = createStore (todoApp)
 
 //Link presentation component - does not know about the behaviour
-const Link = (props:{active:boolean,children:React$Element<*>,onClick:Function}) =>
+const Link = props => {
+  if (props.active) {
+    return React.createElement(
+      'span',
+      null, //no
+      props.children
+    );
+  }
+  return React.createElement(
+    'a',
+    { href: '#', onClick: e => {
+        e.preventDefault();props.onClick();
+      } },
+    props.children
+  );
+};
+
+const LinkJSX = (props:{active:boolean,children:React$Element<*>,onClick:Function}) =>
 {
     if(props.active) {
        return <span>{props.children}</span>
     }
     return (
-    <a href='#' onClick={e => { e.preventDefault(); props.onClick(); }} >
+    <a href='#' onClick={e => { e.preventDefault(); props.onClick(); }} > // http://stackoverflow.com/questions/4855168/what-is-href-and-why-is-it-used
       {props.children}
     </a>
   );
 };
 
 class FilterLink  extends React.Component { // container component - provides data and behaviour for the used Link presentation component
+  unsubscribe:Function;
   componentDidMount() {
     this.unsubscribe= store.subscribe(()=> this.forceUpdate());
     // this is needed because if the parent component does not update when then
@@ -101,7 +119,7 @@ class FilterLink  extends React.Component { // container component - provides da
       <Link
         active ={props.filter===state.visibilityFilter}
         onClick = {()=> store.dispatch (({ type:'SET_VISIBILITY_FILTER', filter: props.filter }:Action$SetVisibilityFilter))}
-        children= {props.children} />  
+        children= {props.children} />
     )
   };
 };
@@ -146,20 +164,44 @@ const TodoList =(props:TodoListReactComponentProps) : React$Element<any>=>(
   </ul>
 )
 
-const AddTodo = (props:{onAddClick:Function}): React$Element<any> =>
+const AddTodo = (): React$Element<any> =>
 {
   let input;
+  let onAddClick=text=>store.dispatch(({type:'ADD_TODO',id:nextTodoId++,text}:Action$ADD_TODO))
   return (
     <div>
       <input ref ={ node => {input=node;} } />
-      <button onClick={() =>{ props.onAddClick(input.value); input.value='';}}>
+      <button onClick={() =>{ onAddClick(input.value); input.value='';}}>
         Add Todo
       </button>
     </div>
   )
 }
 
-const Footer = (): React$Element<any> =>
+class VisibleTodoList extends React.Component {
+  unsubscribe:Function
+  componentDidMount() {
+    this.unsubscribe= store.subscribe(()=> this.forceUpdate());
+    // this is needed because if the parent component does not update when then
+    // store changes, this component would render a stale value
+  };
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+  render () {
+    const props = this.props;
+    const state = store.getState();
+
+    return React.createElement(TodoList,
+        {
+          todos:getVisibleTodos(state.todos, state.visibilityFilter),
+          onTodoClick:id => store.dispatch(({type:'TOGGLE_TODO',id}:Action$TOGGLE_TODO))
+        }
+      )
+    }
+}
+
+const FooterJSX = (): React$Element<any> =>
 {
   return(
     <p>
@@ -174,27 +216,44 @@ const Footer = (): React$Element<any> =>
   )
 }
 
-const TodoApp = ( props: State$App) :React$Element<any> => {
+const Footer = () : React$Element<any> => {
+  return React.createElement(
+    'p',
+    null,
+    'Show:',
+    ' ',
+    React.createElement(FilterLink, { filter: 'SHOW_ALL', children: React.createElement(
+        'span',
+        {},
+        'All'
+      ) }),
+    ' ',
+    React.createElement(FilterLink, { filter: 'SHOW_ACTIVE', children: React.createElement(
+        'span',
+        {},
+        'Active'
+      ) }),
+    ' ',
+    React.createElement(FilterLink, { filter: 'SHOW_COMPLETED', children: React.createElement(
+        'span',
+        {},
+        'Completed'
+      ) })
+  );
+};
+
+const TodoApp = () :React$Element<any> => {
     return (
       <div>
-        <AddTodo onAddClick={text=>store.dispatch(({type:'ADD_TODO',id:nextTodoId++,text}:Action$ADD_TODO))} ></AddTodo>
-        <TodoList todos={ getVisibleTodos( props.todos, props.visibilityFilter ) }
-                  onTodoClick={id=> store.dispatch(({type:'TOGGLE_TODO',id}:Action$TOGGLE_TODO))}>
-        </TodoList>
-        <Footer visibilityFilter={props.visibilityFilter} >
-        </Footer>
-
+        <AddTodo/>
+        <VisibleTodoList/>
+        <Footer />
       </div>
     );
   }
 
 const root   = document.getElementById('root')
-const render = () => {
-  ReactDOM.render(
-    <TodoApp todos={store.getState().todos} visibilityFilter={store.getState().visibilityFilter} />,
-    root
-  );
-};
+const render = () => { ReactDOM.render( <TodoApp />, root ); };
 
 store.subscribe(render)
 render();
