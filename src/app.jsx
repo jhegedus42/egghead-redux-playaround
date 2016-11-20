@@ -70,7 +70,6 @@ const todoApp = (state : State$App = {todos:[],visibilityFilter:'SHOW_ALL'}, act
 }
 
 //const todoApp =combineReducers({todos:todosReducer, visibilityFilter:visibilityFilterReducer})
-const store  = createStore (todoApp)
 
 //Link presentation component - does not know about the behaviour
 const Link = props => {
@@ -242,7 +241,7 @@ const Footer = () : React$Element<any> => {
   );
 };
 
-const TodoApp = () :React$Element<any> => {
+const TodoApp = ({store}) :React$Element<any> => {
     return (
       <div>
         <AddTodo/>
@@ -253,7 +252,5 @@ const TodoApp = () :React$Element<any> => {
   }
 
 const root   = document.getElementById('root')
-const render = () => { ReactDOM.render( <TodoApp />, root ); };
-
-store.subscribe(render)
-render();
+const s:Store<S,A>=createStore (todoApp)
+ReactDOM.render( <TodoApp store={s}/>, root );
