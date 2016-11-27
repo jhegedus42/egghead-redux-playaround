@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom';
 import { createStore , combineReducers} from 'redux'
 import deepFreeze from 'deepfreeze'
 import expect from 'expect'
+import type { Store } from 'redux';
+
 var _ = require('lodash')
 
 type State$Todo = {
@@ -46,6 +48,8 @@ type State$App = {
   todos:State$TodoList,
   visibilityFilter:State$VisibilityFilter
 }
+
+type StoreType=Store <State$App, Action$App>
 
 const todosReducer = (state: State$TodoList=[], action: Action$App) :State$TodoList=>{
       switch (action.type){
@@ -102,8 +106,11 @@ const LinkJSX = (props:{active:boolean,children:React$Element<*>,onClick:Functio
 };
 
 class FilterLink  extends React.Component { // container component - provides data and behaviour for the used Link presentation component
+  props:{store:StoreType,filter:State$VisibilityFilter,children:React$Element<*>};
   unsubscribe:Function;
   componentDidMount() {
+    const store:StoreType = (this.props.store:StoreType);
+
     this.unsubscribe= store.subscribe(()=> this.forceUpdate());
     // this is needed because if the parent component does not update when then
     // store changes, this component would render a stale value
@@ -112,7 +119,9 @@ class FilterLink  extends React.Component { // container component - provides da
     this.unsubscribe();
   }
   render(){
-    const props = (this.props:{filter:State$VisibilityFilter,children:React$Element<*>});
+    const props = this.props;
+    const store:StoreType = this.props.store;
+
     const state = store.getState();
     return (
       <Link
@@ -163,9 +172,10 @@ const TodoList =(props:TodoListReactComponentProps) : React$Element<any>=>(
   </ul>
 )
 
-const AddTodo = (): React$Element<any> =>
+const AddTodo = (props:{store:StoreType}): React$Element<any> =>
 {
   let input;
+  const store:StoreType = props.store;
   let onAddClick=text=>store.dispatch(({type:'ADD_TODO',id:nextTodoId++,text}:Action$ADD_TODO))
   return (
     <div>
@@ -180,6 +190,7 @@ const AddTodo = (): React$Element<any> =>
 class VisibleTodoList extends React.Component {
   unsubscribe:Function
   componentDidMount() {
+    const store:StoreType = this.props.store;
     this.unsubscribe= store.subscribe(()=> this.forceUpdate());
     // this is needed because if the parent component does not update when then
     // store changes, this component would render a stale value
@@ -189,6 +200,7 @@ class VisibleTodoList extends React.Component {
   }
   render () {
     const props = this.props;
+    const store:StoreType = this.props.store;
     const state = store.getState();
 
     return React.createElement(TodoList,
@@ -200,40 +212,26 @@ class VisibleTodoList extends React.Component {
     }
 }
 
-const FooterJSX = (): React$Element<any> =>
-{
-  return(
-    <p>
-      Show:
-      {' '}
-      <FilterLink filter='SHOW_ALL' children={<span>All</span>} />
-      {' '}
-      <FilterLink filter='SHOW_ACTIVE' children={<span>Active</span>} />
-      {' '}
-      <FilterLink filter='SHOW_COMPLETED' children={<span>Completed</span>}/>
-    </p>
-  )
-}
 
-const Footer = () : React$Element<any> => {
+const Footer  = (props:{store:StoreType}) : React$Element<any> => {
   return React.createElement(
     'p',
     null,
     'Show:',
     ' ',
-    React.createElement(FilterLink, { filter: 'SHOW_ALL', children: React.createElement(
+    React.createElement(FilterLink, {store:props.store, filter: 'SHOW_ALL', children: React.createElement(
         'span',
         {},
         'All'
       ) }),
     ' ',
-    React.createElement(FilterLink, { filter: 'SHOW_ACTIVE', children: React.createElement(
+    React.createElement(FilterLink, {store:props.store, filter: 'SHOW_ACTIVE', children: React.createElement(
         'span',
         {},
         'Active'
       ) }),
     ' ',
-    React.createElement(FilterLink, { filter: 'SHOW_COMPLETED', children: React.createElement(
+    React.createElement(FilterLink, {store:props.store, filter: 'SHOW_COMPLETED', children: React.createElement(
         'span',
         {},
         'Completed'
@@ -241,16 +239,16 @@ const Footer = () : React$Element<any> => {
   );
 };
 
-const TodoApp = ({store}) :React$Element<any> => {
+const TodoApp = (props:{store:StoreType} ) :React$Element<any> => {
     return (
       <div>
-        <AddTodo/>
-        <VisibleTodoList/>
-        <Footer />
+        <AddTodo store={props.store}/>
+        <VisibleTodoList store={props.store}/>
+        <Footer store={props.store}/>
       </div>
     );
   }
 
 const root   = document.getElementById('root')
-const s:Store<S,A>=createStore (todoApp)
+const s:StoreType =createStore (todoApp)
 ReactDOM.render( <TodoApp store={s}/>, root );
