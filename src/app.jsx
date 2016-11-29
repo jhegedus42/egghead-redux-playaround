@@ -73,7 +73,7 @@ const todoApp = (state : State$App = {todos:[],visibilityFilter:'SHOW_ALL'}, act
   return { todos: todosReducer(state.todos, action), visibilityFilter: visibilityFilterReducer(state.visibilityFilter,action) };
 }
 
-//const todoApp =combineReducers({todos:todosReducer, visibilityFilter:visibilityFilterReducer})
+//const todoApp = combineReducers({todos:todosReducer, visibilityFilter:visibilityFilterReducer})
 
 //Link presentation component - does not know about the behaviour
 const Link = props => {
@@ -93,8 +93,7 @@ const Link = props => {
   );
 };
 
-const LinkJSX = (props:{active:boolean,children:React$Element<*>,onClick:Function}) =>
-{
+const LinkJSX = (props:{active:boolean,children:React$Element<*>,onClick:Function}) =>{
     if(props.active) {
        return <span>{props.children}</span>
     }
@@ -106,10 +105,11 @@ const LinkJSX = (props:{active:boolean,children:React$Element<*>,onClick:Functio
 };
 
 class FilterLink  extends React.Component { // container component - provides data and behaviour for the used Link presentation component
-  props:{store:StoreType,filter:State$VisibilityFilter,children:React$Element<*>};
+  props:{filter:State$VisibilityFilter,children:React$Element<*>};
   unsubscribe:Function;
+  context:{store:StoreType}
   componentDidMount() {
-    const store:StoreType = (this.props.store:StoreType);
+    const store:StoreType = (this.context.store:StoreType);
 
     this.unsubscribe= store.subscribe(()=> this.forceUpdate());
     // this is needed because if the parent component does not update when then
@@ -120,7 +120,7 @@ class FilterLink  extends React.Component { // container component - provides da
   }
   render(){
     const props = this.props;
-    const store:StoreType = this.props.store;
+    const store:StoreType = this.context.store;
 
     const state = store.getState();
     return (
@@ -131,8 +131,11 @@ class FilterLink  extends React.Component { // container component - provides da
     )
   };
 };
+FilterLink.contextTypes={
+  store:React.PropTypes.object
+};
 
-const getVisibleTodos = ( todos:State$TodoList, filter:State$VisibilityFilter ) : State$TodoList => {
+const getVisibleTodos  = (todos:State$TodoList, filter:State$VisibilityFilter ) : State$TodoList => {
   switch (filter) {
     case ('SHOW_ALL' :State$VisibilityFilter):
       return todos;
@@ -151,7 +154,7 @@ const getVisibleTodos = ( todos:State$TodoList, filter:State$VisibilityFilter ) 
 
 let nextTodoId = 0;
 
-const TodoReactElement=(props:{onClick:Function,completed:boolean,text:string}) : React$Element<any>=>(
+const TodoReactElement = (props:{onClick:Function,completed:boolean,text:string}) : React$Element<any>=>(
             <li onClick={props.onClick}
                 style ={{ textDecoration: props.completed ? 'line-through' : 'none'}} >
                 {props.text}
@@ -160,7 +163,7 @@ const TodoReactElement=(props:{onClick:Function,completed:boolean,text:string}) 
 
 type TodoListReactComponentProps ={todos:State$TodoList,onTodoClick:Function}
 
-const TodoList =(props:TodoListReactComponentProps) : React$Element<any>=>(
+const TodoList = (props:TodoListReactComponentProps) : React$Element<any>=>(
   <ul>
     {props.todos.map( todo=>
       <TodoReactElement
@@ -172,10 +175,9 @@ const TodoList =(props:TodoListReactComponentProps) : React$Element<any>=>(
   </ul>
 )
 
-const AddTodo = (props:{store:StoreType}): React$Element<any> =>
-{
+const AddTodo  = ( props,context:{store:StoreType}): React$Element<any> =>{
   let input;
-  const store:StoreType = props.store;
+  const store:StoreType = context.store;
   let onAddClick=text=>store.dispatch(({type:'ADD_TODO',id:nextTodoId++,text}:Action$ADD_TODO))
   return (
     <div>
@@ -186,11 +188,15 @@ const AddTodo = (props:{store:StoreType}): React$Element<any> =>
     </div>
   )
 }
+AddTodo.contextTypes = {
+  store:React.PropTypes.object
+};
 
 class VisibleTodoList extends React.Component {
   unsubscribe:Function
+  context:{store:StoreType}
   componentDidMount() {
-    const store:StoreType = this.props.store;
+    const store:StoreType = this.context.store; //magical injection of dependency
     this.unsubscribe= store.subscribe(()=> this.forceUpdate());
     // this is needed because if the parent component does not update when then
     // store changes, this component would render a stale value
@@ -200,7 +206,7 @@ class VisibleTodoList extends React.Component {
   }
   render () {
     const props = this.props;
-    const store:StoreType = this.props.store;
+    const store:StoreType = this.context.store;
     const state = store.getState();
 
     return React.createElement(TodoList,
@@ -211,44 +217,54 @@ class VisibleTodoList extends React.Component {
       )
     }
 }
+VisibleTodoList.contextTypes = {
+  store: React.PropTypes.object
+}
 
-
-const Footer  = (props:{store:StoreType}) : React$Element<any> => {
+const Footer  = () : React$Element<any> => {
   return React.createElement(
     'p',
     null,
     'Show:',
     ' ',
-    React.createElement(FilterLink, {store:props.store, filter: 'SHOW_ALL', children: React.createElement(
-        'span',
-        {},
-        'All'
-      ) }),
+    React.createElement(FilterLink, {filter: 'SHOW_ALL', children: React.createElement( 'span', {}, 'All' ) }),
     ' ',
-    React.createElement(FilterLink, {store:props.store, filter: 'SHOW_ACTIVE', children: React.createElement(
-        'span',
-        {},
-        'Active'
-      ) }),
+    React.createElement(FilterLink, {filter: 'SHOW_ACTIVE', children: React.createElement('span',{},'Active')}),
     ' ',
-    React.createElement(FilterLink, {store:props.store, filter: 'SHOW_COMPLETED', children: React.createElement(
-        'span',
-        {},
-        'Completed'
-      ) })
+    React.createElement(FilterLink, {filter: 'SHOW_COMPLETED', children: React.createElement( 'span', {}, 'Completed' )})
   );
 };
 
-const TodoApp = (props:{store:StoreType} ) :React$Element<any> => {
+const TodoApp = () :React$Element<any> => {
     return (
       <div>
-        <AddTodo store={props.store}/>
-        <VisibleTodoList store={props.store}/>
-        <Footer store={props.store}/>
+        <AddTodo />
+        <VisibleTodoList />
+        <Footer />
       </div>
     );
   }
 
-const root   = document.getElementById('root')
-const s:StoreType =createStore (todoApp)
-ReactDOM.render( <TodoApp store={s}/>, root );
+
+class Provider extends React.Component {
+  props:{store:StoreType,children:React$Element<*>};
+  getChildContext(){
+    return {
+      store:this.props.store
+    };
+  }
+
+  render(){
+    return this.props.children;
+  }
+}
+
+Provider.childContextTypes={
+  store:React.PropTypes.object
+};
+
+const root        =  document.getElementById('root')
+const s:StoreType =  createStore (todoApp)
+ReactDOM.render  (
+   React.createElement (Provider, {store : s, children:<TodoApp/>}),
+    root );
