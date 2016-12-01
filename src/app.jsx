@@ -94,47 +94,25 @@ const Link = props => {
   );
 };
 
-const LinkJSX = (props:{active:boolean,children:React$Element<*>,onClick:Function}) =>{
-    if(props.active) {
-       return <span>{props.children}</span>
-    }
-    return (
-    <a href='#' onClick={e => { e.preventDefault(); props.onClick(); }} > // http://stackoverflow.com/questions/4855168/what-is-href-and-why-is-it-used
-      {props.children}
-    </a>
-  );
+const mapStateToLinkProps = ( state,ownProps ) => {
+  return { active: ownProps.filter=== state.visibilityFilter };
 };
 
-class FilterLink  extends React.Component { // container component - provides data and behaviour for the used Link presentation component
-  props:{filter:State$VisibilityFilter,children:React$Element<*>};
-  unsubscribe:Function;
-  context:{store:StoreType}
-  componentDidMount() {
-    const store:StoreType = (this.context.store:StoreType);
-
-    this.unsubscribe= store.subscribe(()=> this.forceUpdate());
-    // this is needed because if the parent component does not update when then
-    // store changes, this component would render a stale value
-  };
-  componentWillUnmount() {
-    this.unsubscribe();
+const mapDispatchToLinkProps =(dispatch,ownProps)=>
+  {   return {
+          onClick : ()=> {
+            dispatch ((
+              { type:'SET_VISIBILITY_FILTER', filter: ownProps.filter }:Action$SetVisibilityFilter
+            ))
+          }
+      }
   }
-  render(){
-    const props = this.props;
-    const store:StoreType = this.context.store;
 
-    const state = store.getState();
-    return (
-      <Link
-        active ={props.filter===state.visibilityFilter}
-        onClick = {()=> store.dispatch (({ type:'SET_VISIBILITY_FILTER', filter: props.filter }:Action$SetVisibilityFilter))}
-        children= {props.children} />
-    )
-  };
-};
-FilterLink.contextTypes={
-  store:React.PropTypes.object
-};
+const FilterLink = connect (
+  mapStateToLinkProps,
+  mapDispatchToLinkProps
+)(Link);
+
 
 const getVisibleTodos  = (todos:State$TodoList, filter:State$VisibilityFilter ) : State$TodoList => {
   switch (filter) {
