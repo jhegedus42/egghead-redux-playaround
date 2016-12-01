@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {Provider,connect} from 'react-redux';
 import { createStore , combineReducers} from 'redux'
 import deepFreeze from 'deepfreeze'
 import expect from 'expect'
@@ -175,10 +176,9 @@ const TodoList = (props:TodoListReactComponentProps) : React$Element<any>=>(
   </ul>
 )
 
-const AddTodo  = ( props,context:{store:StoreType}): React$Element<any> =>{
+let AddTodo  = ( {dispatch}): React$Element<any> =>{
   let input;
-  const store:StoreType = context.store;
-  let onAddClick=text=>store.dispatch(({type:'ADD_TODO',id:nextTodoId++,text}:Action$ADD_TODO))
+  let onAddClick=text=>dispatch(({type:'ADD_TODO',id:nextTodoId++,text}:Action$ADD_TODO))
   return (
     <div>
       <input ref ={ node => {input=node;} } />
@@ -188,38 +188,37 @@ const AddTodo  = ( props,context:{store:StoreType}): React$Element<any> =>{
     </div>
   )
 }
-AddTodo.contextTypes = {
-  store:React.PropTypes.object
+
+AddTodo= connect (
+  null,
+  dispatch => {
+    return {dispatch};
+  }
+)(AddTodo); //wtf is dispatch ?
+
+const mapStateToTodoListProps = (state)=>{
+  return {
+    todos: getVisibleTodos(state.todos, state.visibilityFilter)
+  };
 };
 
-class VisibleTodoList extends React.Component {
-  unsubscribe:Function
-  context:{store:StoreType}
-  componentDidMount() {
-    const store:StoreType = this.context.store; //magical injection of dependency
-    this.unsubscribe= store.subscribe(()=> this.forceUpdate());
-    // this is needed because if the parent component does not update when then
-    // store changes, this component would render a stale value
-  };
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
-  render () {
-    const props = this.props;
-    const store:StoreType = this.context.store;
-    const state = store.getState();
 
-    return React.createElement(TodoList,
-        {
-          todos:getVisibleTodos(state.todos, state.visibilityFilter),
-          onTodoClick:id => store.dispatch(({type:'TOGGLE_TODO',id}:Action$TOGGLE_TODO))
-        }
-      )
+const mapDispatchToTodoListProps = (dispatch)=>{
+  return {
+    onTodoClick: (id)=>{
+      dispatch({
+        type: 'TOGGLE_TODO',
+        id
+      })
     }
-}
-VisibleTodoList.contextTypes = {
-  store: React.PropTypes.object
-}
+  };
+};
+
+const VisibleTodoList = connect(
+  mapStateToTodoListProps,
+  mapDispatchToTodoListProps
+)(TodoList)
+
 
 const Footer  = () : React$Element<any> => {
   return React.createElement(
@@ -246,18 +245,6 @@ const TodoApp = () :React$Element<any> => {
   }
 
 
-class Provider extends React.Component {
-  props:{store:StoreType,children:React$Element<*>};
-  getChildContext(){
-    return {
-      store:this.props.store
-    };
-  }
-
-  render(){
-    return this.props.children;
-  }
-}
 
 Provider.childContextTypes={
   store:React.PropTypes.object
@@ -265,6 +252,4 @@ Provider.childContextTypes={
 
 const root        =  document.getElementById('root')
 const s:StoreType =  createStore (todoApp)
-ReactDOM.render  (
-   React.createElement (Provider, {store : s, children:<TodoApp/>}),
-    root );
+ReactDOM.render  ( React.createElement (Provider, {store : s, children:<TodoApp/>}), root );
