@@ -56,6 +56,8 @@ const setVisibilityFilter = (filter)=>{
   return ( { type:'SET_VISIBILITY_FILTER', filter: filter }:Action$SetVisibilityFilter)
 }
 
+const toggleTodo = (id)=>{ return { type: 'TOGGLE_TODO', id }}
+
 // reducers
 
 class Todo {
@@ -200,14 +202,7 @@ const mapStateToTodoListProps = (state)=>{
 };
 
 const mapDispatchToTodoListProps = (dispatch)=>{
-  return {
-    onTodoClick: (id)=>{
-      dispatch({
-        type: 'TOGGLE_TODO',
-        id
-      })
-    }
-  };
+  return { onTodoClick: (id)=>{ dispatch(toggleTodo(id)) } };
 };
 
 const VisibleTodoList = connect(
