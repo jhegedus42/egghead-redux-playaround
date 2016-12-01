@@ -51,7 +51,6 @@ type State$App = {
 }
 
 type StoreType=Store <State$App, Action$App>
-
 const todosReducer = (state: State$TodoList=[], action: Action$App) :State$TodoList=>{
       switch (action.type){
         case 'ADD_TODO' : return [ ... state, Todo.make(action.text, action.id)];
@@ -113,7 +112,6 @@ const FilterLink = connect (
   mapDispatchToLinkProps
 )(Link);
 
-
 const getVisibleTodos  = (todos:State$TodoList, filter:State$VisibilityFilter ) : State$TodoList => {
   switch (filter) {
     case ('SHOW_ALL' :State$VisibilityFilter):
@@ -131,7 +129,6 @@ const getVisibleTodos  = (todos:State$TodoList, filter:State$VisibilityFilter ) 
   }
 }
 
-let nextTodoId = 0;
 
 const TodoReactElement = (props:{onClick:Function,completed:boolean,text:string}) : React$Element<any>=>(
             <li onClick={props.onClick}
@@ -154,13 +151,15 @@ const TodoList = (props:TodoListReactComponentProps) : React$Element<any>=>(
   </ul>
 )
 
+let nextTodoId = 0;
+const addTodo=(text)=>({type:'ADD_TODO',id:nextTodoId++,text}:Action$ADD_TODO)
+
 let AddTodo  = ( {dispatch}): React$Element<any> =>{
   let input;
-  let onAddClick=text=>dispatch(({type:'ADD_TODO',id:nextTodoId++,text}:Action$ADD_TODO))
   return (
     <div>
       <input ref ={ node => {input=node;} } />
-      <button onClick={() =>{ onAddClick(input.value); input.value='';}}>
+      <button onClick={() =>{ dispatch(addTodo(input.value)); input.value='';}}>
         Add Todo
       </button>
     </div>
@@ -180,7 +179,6 @@ const mapStateToTodoListProps = (state)=>{
   };
 };
 
-
 const mapDispatchToTodoListProps = (dispatch)=>{
   return {
     onTodoClick: (id)=>{
@@ -196,7 +194,6 @@ const VisibleTodoList = connect(
   mapStateToTodoListProps,
   mapDispatchToTodoListProps
 )(TodoList)
-
 
 const Footer  = () : React$Element<any> => {
   return React.createElement(
@@ -221,8 +218,6 @@ const TodoApp = () :React$Element<any> => {
       </div>
     );
   }
-
-
 
 Provider.childContextTypes={
   store:React.PropTypes.object
