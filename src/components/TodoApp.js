@@ -5,11 +5,11 @@ import React from 'react';
 import {VisibleTodoList} from './TodoList.js'
 import {Footer} from './Footer.js'
 import {Provider} from 'react-redux';
-export const TodoApp = ({params}) :React$Element<any> => {
+export const TodoApp = () :React$Element<any> => {
     return (
       <div>
         <AddTodo />
-        <VisibleTodoList filter={params.filter||'all'}/>
+        <VisibleTodoList />
         <Footer />
       </div>
     );
