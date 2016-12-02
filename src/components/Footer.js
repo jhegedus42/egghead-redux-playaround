@@ -1,7 +1,7 @@
 // @flow
 //Footer component
 import React from 'react';
-import {FilterLink} from './Link.js'
+import  FilterLink from './Link.js'
 
 export const Footer  = () : React$Element<any> => {
   return React.createElement(
@@ -9,10 +9,10 @@ export const Footer  = () : React$Element<any> => {
     null,
     'Show:',
     ' ',
-    React.createElement(FilterLink, {filter: 'SHOW_ALL', children: React.createElement( 'span', {}, 'All' ) }),
+    React.createElement(FilterLink, {filter: 'all', children: React.createElement( 'span', {}, 'All' ) }),
     ' ',
-    React.createElement(FilterLink, {filter: 'SHOW_ACTIVE', children: React.createElement('span',{},'Active')}),
+    React.createElement(FilterLink, {filter: 'active', children: React.createElement('span',{},'Active')}),
     ' ',
-    React.createElement(FilterLink, {filter: 'SHOW_COMPLETED', children: React.createElement( 'span', {}, 'Completed' )})
+    React.createElement(FilterLink, {filter: 'completed', children: React.createElement( 'span', {}, 'Completed' )})
   );
 };

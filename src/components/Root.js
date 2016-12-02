@@ -8,7 +8,7 @@ import { browserHistory } from 'react-router'
 const Root = ({store}:{store:StoreType})=> (
   <Provider store = {store}>
     <Router history={browserHistory}>
-       <Route path='/' component ={TodoApp}/>
+       <Route path='/(:filter)' component ={TodoApp}/>
     </Router>
   </Provider>
 );

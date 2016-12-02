@@ -34,13 +34,13 @@ const TodoList = (props:TodoListReactComponentProps) : React$Element<any>=>(
 
 const getVisibleTodos  = (todos:State$TodoList, filter:State$VisibilityFilter ) : State$TodoList => {
   switch (filter) {
-    case ('SHOW_ALL' :State$VisibilityFilter):
+    case ('all' :State$VisibilityFilter):
       return todos;
-    case ('SHOW_COMPLETED':State$VisibilityFilter):
+    case ('completed':State$VisibilityFilter):
       return todos.filter(
         t => t.completed
       );
-    case ('SHOW_ACTIVE':State$VisibilityFilter):
+    case ('active':State$VisibilityFilter):
       return todos.filter(
         t => !t.completed
       );
@@ -49,9 +49,9 @@ const getVisibleTodos  = (todos:State$TodoList, filter:State$VisibilityFilter ) 
   }
 }
 
-const mapStateToTodoListProps = (state)=>{
+const mapStateToTodoListProps = (state,ownProps)=>{
   return {
-    todos: getVisibleTodos(state.todos, state.visibilityFilter)
+    todos: getVisibleTodos(state.todos, ownProps.filter)
   };
 };
 
