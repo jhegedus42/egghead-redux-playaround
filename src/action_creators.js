@@ -3,7 +3,7 @@
 // action creators
 import type { Action$App, Action$SetVisibilityFilter,Action$ADD_TODO, Action$TOGGLE_TODO}
    from './action_types.js';
-import type {State$Todo,State$TodoList,State$App,State$VisibilityFilter,StoreType }
+import type {State$Todo,State$TodoList,State$App,StoreType }
    from './state_types.js';
 import {v4} from 'node-uuid';
 let nextTodoId = 0;

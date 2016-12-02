@@ -3,7 +3,7 @@
 import {loadState, saveState} from './localStorage.js';
 import throttle from 'lodash/throttle';
 import { createStore , combineReducers} from 'redux'
-import type {State$Todo,State$TodoList,State$App,State$VisibilityFilter,StoreType }
+import type {State$Todo,State$TodoList,State$App,StoreType }
    from './state_types.js';
 import {todoApp}  from './reducers.js'
 const configureStore = () =>{

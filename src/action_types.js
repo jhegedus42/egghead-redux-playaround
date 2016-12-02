@@ -1,12 +1,11 @@
 
 // @flow
 // actions
-import type {State$Todo,State$TodoList,State$App,State$VisibilityFilter,StoreType }
+import type {State$Todo,State$TodoList,State$App,StoreType }
    from './state_types.js';
 
 export type Action$SetVisibilityFilter = {
-     type:'SET_VISIBILITY_FILTER',
-     filter:State$VisibilityFilter
+     type:'SET_VISIBILITY_FILTER'
 };
 
 export type Action$ADD_TODO = {

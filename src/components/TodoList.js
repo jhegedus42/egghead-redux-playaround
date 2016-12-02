@@ -4,8 +4,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {toggleTodo} from '../action_creators.js'
-import type {State$Todo,State$TodoList,State$App,State$VisibilityFilter,StoreType }
-   from '../state_types.js';
+import type {State$Todo,State$TodoList,State$App,StoreType } from '../state_types.js';
 
 const TodoReactElement = (props:{onClick:Function,completed:boolean,text:string}) : React$Element<any>=>(
             <li onClick={props.onClick}
@@ -32,15 +31,15 @@ const TodoList = (props:TodoListReactComponentProps) : React$Element<any>=>(
 
 // VisibleTodoList container component
 
-const getVisibleTodos  = (todos:State$TodoList, filter:State$VisibilityFilter ) : State$TodoList => {
+const getVisibleTodos  = (todos:State$TodoList, filter) : State$TodoList => {
   switch (filter) {
-    case ('all' :State$VisibilityFilter):
+    case ('all' ):
       return todos;
-    case ('completed':State$VisibilityFilter):
+    case ('completed'):
       return todos.filter(
         t => t.completed
       );
-    case ('active':State$VisibilityFilter):
+    case ('active'):
       return todos.filter(
         t => !t.completed
       );

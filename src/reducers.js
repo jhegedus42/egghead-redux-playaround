@@ -3,7 +3,7 @@
 import type { Action$App, Action$SetVisibilityFilter,Action$ADD_TODO, Action$TOGGLE_TODO}
    from './action_types.js';
 
-import type {State$Todo,State$TodoList,State$App,State$VisibilityFilter,StoreType }
+import type {State$Todo,State$TodoList,State$App,StoreType }
    from './state_types.js';
 
 var _ = require('lodash')
@@ -28,14 +28,6 @@ const todosReducer = (state: State$TodoList=[], action: Action$App) :State$TodoL
 };
 
 
-const visibilityFilterReducer = (state:State$VisibilityFilter = 'SHOW_ALL', action:Action$App) : State$VisibilityFilter =>  {
-  switch(action.type) {
-    case 'SET_VISIBILITY_FILTER':
-      return action.filter;
-    default : return state;
-  }
-}
-
-export const todoApp = (state : State$App = {todos:[],visibilityFilter:'SHOW_ALL'}, action: Action$App) : State$App => {
-  return { todos: todosReducer(state.todos, action), visibilityFilter: visibilityFilterReducer(state.visibilityFilter,action) };
+export const todoApp = (state : State$App = {todos:[]}, action: Action$App) : State$App => {
+  return { todos: todosReducer(state.todos, action)};
 }
