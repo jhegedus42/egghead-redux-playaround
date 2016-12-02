@@ -21,5 +21,3 @@ export const saveState = (state)=>{
     //Ignore
   }
 }
-
-//window.localStorage.clear() // clear local storage in browser

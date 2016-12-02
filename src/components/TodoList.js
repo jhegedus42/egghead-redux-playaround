@@ -5,7 +5,8 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
 import {toggleTodo} from '../action_creators.js'
-import type {State$Todo,State$TodoList,State$App,StoreType } from '../state_types.js';
+import type {State$Todo,State$TodoList,State$App,StoreType } from '../types/state_types.js';
+import {getVisibleTodos} from '../reducers/reducers'
 
 const TodoReactElement = (props:{onClick:Function,completed:boolean,text:string}) : React$Element<any>=>(
             <li onClick={props.onClick}
@@ -32,25 +33,9 @@ const TodoList = (props:TodoListReactComponentProps) : React$Element<any>=>(
 
 // VisibleTodoList container component
 
-const getVisibleTodos  = (todos:State$TodoList, filter) : State$TodoList => {
-  switch (filter) {
-    case ('all' ):
-      return todos;
-    case ('completed'):
-      return todos.filter(
-        t => t.completed
-      );
-    case ('active'):
-      return todos.filter(
-        t => !t.completed
-      );
-    default:
-      throw "undefined action"
-  }
-}
 
-const mapStateToTodoListProps = (state,{params})=>{
-  return { todos: getVisibleTodos(state.todos, params.filter || 'all') };
+const mapStateToTodoListProps = (state:State$App, {params})=>{ // does not depend on the state shape anymore ...
+  return { todos: getVisibleTodos(state, params.filter || 'all') };  // getVisibleTodos knows about the state shape ...
 };
 
 export const VisibleTodoList = withRouter(connect(
