@@ -33,7 +33,13 @@ export class S_Todo  {
 
 
 export type State$TodoMap ={ [key: string]: S_Todo};
-//export const getTodoIds = (m:State$TodoMap) : string[]=> Object.keys(m);
+export const addTodo = (s:State$TodoMap, t:S_Todo) : State$TodoMap=>
+    {
+      const k=t.todoId.id
+      return {...s, [k]:t};
+    }
+export const getAllTodos = (s:State$TodoMap): S_Todo[] =>
+   (Object.keys(s).map(k=>s[k]))
 
 export type State$App = {
   todos:State$TodoMap
