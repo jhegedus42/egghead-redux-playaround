@@ -3,8 +3,8 @@
 // AddTodo component
 import React from 'react';
 import {connect} from 'react-redux';
-
-import {addTodo} from '../action_creators.js'
+import type {A_ADD_TODO} from '../types/action_types'
+import {mk_A_ADD_TODO} from '../types/action_types'
 
 const AddTodoPres  = ( arg : {dispatch: Function}): React$Element<any> =>{
   const dispatch= arg.dispatch
@@ -12,7 +12,7 @@ const AddTodoPres  = ( arg : {dispatch: Function}): React$Element<any> =>{
   return (
     <div>
       <input ref ={ node => {input=node;} } />
-      <button onClick={() =>{ dispatch(addTodo(input.value)); input.value='';}}>
+      <button onClick={() =>{ dispatch(mk_A_ADD_TODO(input.value)); input.value='';}}>
         Add Todo
       </button>
     </div>

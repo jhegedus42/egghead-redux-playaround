@@ -4,8 +4,9 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
-import {toggleTodo} from '../action_creators.js'
-import type {State$Todo,State$TodoList,State$App,StoreType } from '../types/state_types.js';
+import type {A_TOGGLE_TODO} from '../types/action_types'
+import {mk_A_TOGGLE_TODO} from '../types/action_types'
+import type {TodoID,S_Todo,State$TodoMap,State$App,StoreType } from '../types/state_types.js';
 import {getVisibleTodos} from '../reducers/reducers'
 
 const TodoReactElement = (props:{onClick:Function,completed:boolean,text:string}) : React$Element<any>=>(
@@ -16,16 +17,16 @@ const TodoReactElement = (props:{onClick:Function,completed:boolean,text:string}
 );
 
 // TodoList presentational component
-
-type TodoListReactComponentProps ={todos:State$TodoList,onTodoClick:Function}
+type F=(p1: TodoID) => void
+type TodoListReactComponentProps ={todos:S_Todo[],onTodoClick:F}
 
 const TodoList = (props:TodoListReactComponentProps) : React$Element<any>=>(
   <ul>
     {props.todos.map( todo=>
       <TodoReactElement
-        key ={todo.id}
+        key ={todo.todoId.id}
         completed={todo.completed}
-        onClick={()=> props.onTodoClick(todo.id)}
+        onClick={()=> props.onTodoClick(todo.todoId)}
         text= {todo.text} >
       </TodoReactElement>)}
   </ul>
@@ -40,5 +41,5 @@ const mapStateToTodoListProps = (state:State$App, {params})=>{ // does not depen
 
 export const VisibleTodoList = withRouter(connect(
   mapStateToTodoListProps,
-  {onTodoClick:toggleTodo}
+  {onTodoClick:mk_A_TOGGLE_TODO}
 )(TodoList));

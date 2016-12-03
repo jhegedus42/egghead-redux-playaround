@@ -1,21 +1,22 @@
 
 // @flow
 // actions
-import type {State$Todo,State$TodoList,State$App,StoreType }
-   from './state_types.js';
+import type {S_Todo,State$TodoMap,State$App,StoreType,TodoID }
+       from './state_types.js';
+import {v4} from 'node-uuid';
 
-export type Action$SetVisibilityFilter = {
-     type:'SET_VISIBILITY_FILTER'
-};
+export type A_ADD_TODO = {
+    text:string;
+    type:'ADD_TODO';
+}
+export const mk_A_ADD_TODO = (text:string) : A_ADD_TODO =>
+(  { text:text, type : 'ADD_TODO'});
 
-export type Action$ADD_TODO = {
-  type:'ADD_TODO',
-  text:string,
-  id:number
-};
+export type A_TOGGLE_TODO = {
+    todoId:TodoID;
+    type:'TOGGLE_TODO'
+}
+export const mk_A_TOGGLE_TODO = (todoId:TodoID) : A_TOGGLE_TODO =>
+(  {todoId:todoId, type : 'TOGGLE_TODO'});
 
-export type Action$TOGGLE_TODO = { type:'TOGGLE_TODO', id:number }
-
-export type Action$Todo = Action$ADD_TODO | Action$TOGGLE_TODO
-
-export type Action$App = Action$Todo | Action$SetVisibilityFilter
+export type A_TODO= A_TOGGLE_TODO | A_ADD_TODO;

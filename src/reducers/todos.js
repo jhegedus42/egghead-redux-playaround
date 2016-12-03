@@ -1,38 +1,33 @@
 // @flow
-import type { Action$App} from '../types/action_types.js';
-import type { State$Todo , State$TodoList, State$Filter} from '../types/state_types'
-var _ = require('lodash')
-class Todo {
-  static make(t:string,id:number):State$Todo{
-    return {text:t,id:id,completed:false}
-  }
-  static toggle(t:State$Todo):State$Todo {
-    return {...t, completed:!t.completed};
-  }
-};
+import type {  State$TodoMap, State$Filter} from '../types/state_types'
+import {S_Todo,TodoID} from '../types/state_types'
+import {mk_A_ADD_TODO,mk_A_TOGGLE_TODO} from '../types/action_types'
+import type {A_TODO} from '../types/action_types'
 
-const todosReducer = (state: State$TodoList=[], action: Action$App) :State$TodoList=>{ //reducer
-      switch (action.type){
-        case 'ADD_TODO' : return [ ... state, Todo.make(action.text, action.id)];
-        case 'TOGGLE_TODO':
-          const id=action.id;
-          return  _.map(state, (td) => (td.id==id) ? Todo.toggle(td) : td );
-        default : return state;
+const todos = (state: State$TodoMap={}, action: A_TODO) :State$TodoMap=>{ //reducer
+      if (action.type === 'ADD_TODO'){
+        const todo=S_Todo.addTodo(action.text);
+        return { ... state, [todo.todoId.id] : todo};
       }
+      if (action.type=== 'TOGGLE_TODO'){
+          const id=action.todoId.id;
+          const todo=state[id];
+          return { ... state, [todo.todoId.id] : S_Todo.toggle(todo)};
+      }
+      return state;
 };
 
-
-
-export const getVisibleTodos  = (state:State$TodoList, filter:State$Filter) : State$TodoList => { // selector
+export const getVisibleTodos  = (state:State$TodoMap, filter:State$Filter) : S_Todo[] => { // selector
+  const allTodos = Object.keys(state).map(k=>state[k]) ;
   switch (filter) {
     case ('all' ):
-      return state;
+      return allTodos;
     case ('completed'):
-      return state.filter(
+      return allTodos.filter(
         t => t.completed
       );
     case ('active'):
-      return state.filter(
+      return allTodos.filter(
         t => !t.completed
       );
     default:
@@ -40,4 +35,4 @@ export const getVisibleTodos  = (state:State$TodoList, filter:State$Filter) : St
   }
 }
 
-export default todosReducer;
+export default todos;
