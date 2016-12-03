@@ -1,7 +1,7 @@
 // @flow
 //Footer component
 import React from 'react';
-import  FilterLink from './Link.js'
+import  FilterLink from './FilterLink.js'
 
 export const Footer  = () : React$Element<any> => {
   return React.createElement(
