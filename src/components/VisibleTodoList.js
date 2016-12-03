@@ -4,22 +4,21 @@
 import React,{Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router';
-import type {A_TOGGLE_TODO, ty_mk_RECEIVE_TODOS} from '../types/action_types'
+import type {A_TOGGLE_TODO, ty_mk_RECEIVE_TODOS,ty_fetchTodos} from '../types/action_types'
 import * as actions from '../types/action_types'
 import type {TodoID,S_Todo,State$TodoMap,State$App,StoreType,State$Filter } from '../types/state_types.js';
 import {getVisibleTodos} from '../reducers/reducers'
-import {fetchTodos} from '../fakeDB.js'
 import {TodoList} from './TodoList.js'
 class Intermediate extends Component {
-  props:{filter:State$Filter, mk_RECIEVE_TODOS:ty_mk_RECEIVE_TODOS,toggleTodo:Function};
+  props:{
+    filter:State$Filter,
+    mk_RECIEVE_TODOS:ty_mk_RECEIVE_TODOS,
+    toggleTodo:Function,
+    fetchTodos:ty_fetchTodos
+  };
   fetchData(){
-      const {filter, mk_RECIEVE_TODOS} = this.props;
-      fetchTodos(filter).then( todos=>
-        {
-          const t=mk_RECIEVE_TODOS(filter,todos);
-          //console.log(t);
-        }
-      );
+      const {filter, fetchTodos} = this.props;
+        fetchTodos(filter);
     }
   componentDidMount(){
     this.fetchData()

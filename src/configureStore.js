@@ -18,10 +18,23 @@ const addLoggingToDispatch = (store)=>{
 
 };
 
+
+const addPromiseSupportToDispatch = (store) => {
+  const rawDispatch = store.dispatch;
+  return (action) => {
+    if (typeof action.then === 'function') {
+      return action.then(rawDispatch);
+    };
+    return rawDispatch;
+  };
+};
+
+
 const configureStore = () =>{
   const s:StoreType =  createStore (todoApp);
   console.log(s.getState());
   s.dispatch=addLoggingToDispatch(s);
+  s.dispatch=addPromiseSupportToDispatch(s);
   return s;
 };
 export default configureStore;

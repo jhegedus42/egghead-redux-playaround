@@ -4,6 +4,13 @@
 import type {S_Todo,State$TodoMap,State$App,StoreType,TodoID,State$Filter }
        from './state_types.js';
 import {v4} from 'node-uuid';
+import *  as fakeDB from '../fakeDB';
+
+export type ty_fetchTodos =(filter:State$Filter) =>
+  Promise<A_RECIEVE_TODOS>
+export const fetchTodos : ty_fetchTodos =(filter)=> (
+  fakeDB.fetchTodos(filter).then(response =>
+    mk_RECIEVE_TODOS(filter,response)));
 
 export type A_ADD_TODO = {
     text:string;
@@ -29,7 +36,7 @@ export type A_RECIEVE_TODOS = {
 export type ty_mk_RECEIVE_TODOS=(filter:State$Filter,
   serverResponse:S_Todo[]) => A_RECIEVE_TODOS
 
-export const mk_RECIEVE_TODOS : ty_mk_RECEIVE_TODOS= (filter,
+const mk_RECIEVE_TODOS : ty_mk_RECEIVE_TODOS= (filter,
   serverResponse) =>({
    type : 'RECIEVE_TODOS',
    filter,
