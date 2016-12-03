@@ -2,7 +2,7 @@
 
 import {AddTodo} from './AddTodo.js'
 import React from 'react';
-import {VisibleTodoList} from './TodoList.js'
+import {VisibleTodoList} from './VisibleTodoList.js'
 import {Footer} from './Footer.js'
 import {Provider} from 'react-redux';
 export const TodoApp = () :React$Element<any> => {
