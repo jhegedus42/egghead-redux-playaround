@@ -13,7 +13,7 @@ class Intermediate extends Component {
   props:{
     filter:State$Filter,
     mk_RECIEVE_TODOS:ty_mk_RECEIVE_TODOS,
-    toggleTodo:Function,
+    mk_A_TOGGLE_TODO:Function,
     fetchTodos:ty_fetchTodos
   };
   fetchData(){
@@ -29,8 +29,8 @@ class Intermediate extends Component {
     }
   }
   render (){
-    const {toggleTodo, ...rest}=this.props;
-    return <TodoList {...rest} onTodoClick={toggleTodo} />;
+    const {mk_A_TOGGLE_TODO, ...rest}=this.props;
+    return <TodoList {...rest} onTodoClick={mk_A_TOGGLE_TODO} />;
   }
 }
 

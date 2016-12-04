@@ -12,7 +12,12 @@ const AddTodoPres  = ( arg : {dispatch: Function}): React$Element<any> =>{
   return (
     <div>
       <input ref ={ node => {input=node;} } />
-      <button onClick={() =>{ dispatch(mk_A_ADD_TODO(input.value)); input.value='';}}>
+      <button onClick={
+        () =>
+        {
+          dispatch(mk_A_ADD_TODO(input.value));
+          input.value='';}
+      }>
         Add Todo
       </button>
     </div>
