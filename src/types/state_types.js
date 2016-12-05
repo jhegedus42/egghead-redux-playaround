@@ -32,19 +32,29 @@ export class S_Todo  {
 };
 
 
-export type State$TodoMap ={ [key: string]: S_Todo};
-export const addTodo = (s:State$TodoMap, t:S_Todo) : State$TodoMap=>
-    {
-      const k=t.todoId.id
-      return {...s, [k]:t};
-    }
-export const getAllTodos = (s:State$TodoMap): S_Todo[] =>
-   (Object.keys(s).map(k=>s[k]))
-
-export type State$App = {
-  todos:State$TodoMap
+export type State$TodosByIDMap ={ [key: string]: S_Todo};
+export const addTodo = (s:State$TodosByIDMap, t:S_Todo) : State$TodosByIDMap=> {
+    const k=t.todoId.id
+    return {...s, [k]:t};
 }
 
-export type StoreType=Store <State$App, A_TODO>
+export type State$TodoIDsByFilterMap = {
+  all: TodoID[];
+  active: TodoID[];
+  completed : TodoID[];
+}
+
+export const getAllTodos = (s:State$TodosByIDMap): S_Todo[] => (Object.keys(s).map(k=>s[k]))
+
+export type State$Todos = {
+  byId:State$TodosByIDMap;
+  idsByFilter:State$TodoIDsByFilterMap;
+}
+
+export type State$Root = {
+  todos:State$Todos
+}
+
+export type StoreType=Store <State$Root, A_TODO>
 
 export type State$Filter = 'all' | 'active' | 'completed';

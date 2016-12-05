@@ -1,11 +1,11 @@
 // @flow
 import {v4} from 'node-uuid';
-import type {State$TodoMap,State$Filter} from './types/state_types';
+import type {State$TodosByIDMap,State$Filter} from './types/state_types';
 import {S_Todo,addTodo,getAllTodos} from './types/state_types';
 
-const getFakeDB = ():State$TodoMap =>{
+const getFakeDB = ():State$TodosByIDMap =>{
   const s={}
-  const s2=addTodo(s,S_Todo.addTodo("egy"));
+  const s2=addTodo(s,S_Todo.toggle(S_Todo.addTodo("egy")));
   const s3=addTodo(s2,S_Todo.addTodo("ketto"));
   const s4=addTodo(s3,S_Todo.addTodo("harom"));
   return s4;

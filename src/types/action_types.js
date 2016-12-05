@@ -1,16 +1,21 @@
 
 // @flow
 // actions
-import type {S_Todo,State$TodoMap,State$App,StoreType,TodoID,State$Filter }
+import type {S_Todo,State$TodosByIDMap,State$Root,StoreType,TodoID,State$Filter }
        from './state_types.js';
 import {v4} from 'node-uuid';
 import *  as fakeDB from '../fakeDB';
+
 
 export type ty_fetchTodos =(filter:State$Filter) =>
   Promise<A_RECIEVE_TODOS>
 export const fetchTodos : ty_fetchTodos =(filter)=> (
   fakeDB.fetchTodos(filter).then(response =>
     mk_RECIEVE_TODOS(filter,response)));
+
+export const Actions ={
+  RECIEVE_TODOS:'RECIEVE_TODOS'
+}
 
 export type A_ADD_TODO = {
     text:string;
@@ -38,11 +43,11 @@ export type ty_mk_RECEIVE_TODOS=(filter:State$Filter,
 
 const mk_RECIEVE_TODOS : ty_mk_RECEIVE_TODOS= (filter,
   serverResponse) =>({
-   type : 'RECIEVE_TODOS',
+   type : Actions.RECIEVE_TODOS,
    filter,
    serverResponse
 });
 
 
 
-export type A_TODO= A_TOGGLE_TODO | A_ADD_TODO;
+export type A_TODO= A_TOGGLE_TODO | A_ADD_TODO | A_RECIEVE_TODOS;
