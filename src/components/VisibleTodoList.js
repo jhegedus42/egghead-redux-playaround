@@ -18,11 +18,14 @@ class Intermediate extends Component {
     mk_RECIEVE_TODOS:ty_mk_RECEIVE_TODOS,
     mk_A_TOGGLE_TODO:Function,
     fetchTodos:ty_fetchTodos,
+    fetchTodos:ty_fetchTodos,
     todos:State_Todo[],
-    isFetching:boolean
+    isFetching:boolean,
+    requestTodos:Function
   };
   fetchData(){
-      const {filter, fetchTodos} = this.props;
+      const {filter, fetchTodos,requestTodos} = this.props;
+        requestTodos(filter);
         fetchTodos(filter);
     }
   componentDidMount(){

@@ -51,7 +51,7 @@ const mk_RECIEVE_TODOS : ty_mk_RECEIVE_TODOS= (filter,
    serverResponse
 });
 
-// receive todos action
+// fetch todos action
 
 export type ty_fetchTodos =(filter:State_Filter) =>
   Promise<A_RECIEVE_TODOS>
@@ -60,5 +60,12 @@ export const fetchTodos : ty_fetchTodos =(filter)=> (
      mk_RECIEVE_TODOS(filter,response)));
 
 // combined action
+
+// request todos
+
+export const requestTodos = (filter:State_Filter) => ({
+  type: Actions.REQUEST_TODOS,
+  filter
+})
 
 export type A_TODO= A_TOGGLE_TODO | A_ADD_TODO | A_RECIEVE_TODOS;
