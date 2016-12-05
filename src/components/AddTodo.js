@@ -3,8 +3,8 @@
 // AddTodo component
 import React from 'react';
 import {connect} from 'react-redux';
-import type {A_ADD_TODO} from '../types/action_types'
-import {mk_A_ADD_TODO} from '../types/action_types'
+import type {A_ADD_TODO} from '../reducers/actions'
+import {mk_A_ADD_TODO} from '../reducers/actions'
 
 const AddTodoPres  = ( arg : {dispatch: Function}): React$Element<any> =>{
   const dispatch= arg.dispatch

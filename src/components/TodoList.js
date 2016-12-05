@@ -10,7 +10,7 @@ const TodoReactElement = (props:{onClick:Function,completed:boolean,text:string}
 );
 
 type F=(p1: TodoID) => void
-type TodoListReactComponentProps ={todos:S_Todo[],onTodoClick:F}
+type TodoListReactComponentProps ={todos:State_Todo[],onTodoClick:F}
 
 export const TodoList = (props:TodoListReactComponentProps) : React$Element<any>=>(
   <ul>

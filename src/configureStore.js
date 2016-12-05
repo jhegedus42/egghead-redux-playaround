@@ -1,12 +1,14 @@
 // @flow
 
-import throttle from 'lodash/throttle';
 import { createStore , combineReducers, applyMiddleware} from 'redux'
-import type {S_Todo,State$TodosByIDMap,State$Root,StoreType } from './types/state_types.js';
-import rootReducer  from './reducers/todos.js'
 import promise from 'redux-promise';
 import createLogger from 'redux-logger';
+import rootReducer from './reducers/root_Reducer.js'
+import type {State_Root} from './reducers/root_Reducer.js'
+import type {A_TODO} from './reducers/actions.js'
+import type { Store } from 'redux';
 
+export type StoreType=Store <State_Root, A_TODO>
 
 const configureStore = () =>{
   const middlewares=[promise,createLogger()];
