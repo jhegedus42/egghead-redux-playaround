@@ -4,6 +4,7 @@ import {S_Todo,TodoID, getAllTodos} from '../types/state_types'
 import {mk_A_ADD_TODO,mk_A_TOGGLE_TODO,Actions} from '../types/action_types'
 import type {A_TODO} from '../types/action_types'
 import {combineReducers} from 'redux'
+import byIdReducer, * as fromById from './byIdReducer';
 
 const initState={
                         byId:{
@@ -17,18 +18,6 @@ const initState={
 
 
 
-const byIdReducer=(state:State$TodosByIDMap={},action:A_TODO):State$TodosByIDMap=>{
-  switch (action.type){
-    case 'RECIEVE_TODOS':
-      const nextState:State$TodosByIDMap= {...state}; //shallow copy
-      action.serverResponse.forEach(todo=>{
-        nextState[todo.todoId.id]=todo;
-      });
-      return nextState;
-  default:
-    return state;
-  }
-};
 
 const allIdsReducer=(state:TodoID[]=[],action:A_TODO):TodoID[]=>{
   switch (action.type){

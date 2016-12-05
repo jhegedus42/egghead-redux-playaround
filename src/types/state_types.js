@@ -10,7 +10,6 @@ export class TodoID{
  constructor() {this.id=v4();}
 };
 
-
 export class S_Todo  {
   text:string;
   completed:boolean;
@@ -31,7 +30,6 @@ export class S_Todo  {
 
 };
 
-
 export type State$TodosByIDMap ={ [key: string]: S_Todo};
 export const addTodo = (s:State$TodosByIDMap, t:S_Todo) : State$TodosByIDMap=> {
     const k=t.todoId.id
@@ -50,7 +48,6 @@ export type State$Root = {
   byId:State$TodosByIDMap;
   idsByFilter:State$TodoIDsByFilterMap;
 }
-
 
 export type StoreType=Store <State$Root, A_TODO>
 
