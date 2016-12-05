@@ -46,14 +46,11 @@ export type State$TodoIDsByFilterMap = {
 
 export const getAllTodos = (s:State$TodosByIDMap): S_Todo[] => (Object.keys(s).map(k=>s[k]))
 
-export type State$Todos = {
+export type State$Root = {
   byId:State$TodosByIDMap;
   idsByFilter:State$TodoIDsByFilterMap;
 }
 
-export type State$Root = {
-  todos:State$Todos
-}
 
 export type StoreType=Store <State$Root, A_TODO>
 

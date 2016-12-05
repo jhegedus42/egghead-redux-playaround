@@ -7,7 +7,7 @@ import {withRouter} from 'react-router';
 import type {A_TOGGLE_TODO, ty_mk_RECEIVE_TODOS,ty_fetchTodos} from '../types/action_types'
 import * as actions from '../types/action_types'
 import type {TodoID,S_Todo,State$TodosByIDMap,State$Root,StoreType,State$Filter } from '../types/state_types.js';
-import {getVisibleTodos} from '../reducers/reducers'
+import {getVisibleTodos} from '../reducers/todos'
 import {TodoList} from './TodoList.js'
 class Intermediate extends Component {
   props:{
