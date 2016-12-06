@@ -54,12 +54,13 @@ const mk_RECIEVE_TODOS : ty_mk_RECEIVE_TODOS= (filter,
 // fetch todos action
 
 export type ty_fetchTodos =(filter:State_Filter) =>
-  Promise<A_RECIEVE_TODOS>
-export const fetchTodos : ty_fetchTodos =(filter)=> (
-  fakeDB.fetchTodos(filter).then(response =>
-     mk_RECIEVE_TODOS(filter,response)));
+    (dispatch:Function)=> Promise<void>
 
-// combined action
+export const fetchTodos : ty_fetchTodos =(filter)=>(dispatch)=> {
+  dispatch(requestTodos(filter));
+  return fakeDB.fetchTodos(filter).then(response =>
+     dispatch(mk_RECIEVE_TODOS(filter,response)));
+};
 
 // request todos
 
@@ -68,4 +69,5 @@ export const requestTodos = (filter:State_Filter) => ({
   filter
 })
 
+// combined action
 export type A_TODO= A_TOGGLE_TODO | A_ADD_TODO | A_RECIEVE_TODOS;

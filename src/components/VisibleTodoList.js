@@ -24,16 +24,15 @@ class Intermediate extends Component {
     requestTodos:Function
   };
   fetchData(){
-      const {filter, fetchTodos,requestTodos} = this.props;
-        requestTodos(filter);
+      const {filter, fetchTodos} = this.props;
         fetchTodos(filter);
     }
   componentDidMount(){
-    this.fetchData()
+    this.fetchData();
   }
   componentDidUpdate(prevProps){
     if (this.props.filter!== prevProps.filter){
-      this.fetchData()
+      this.fetchData();
     }
   }
   render (){
@@ -45,10 +44,7 @@ class Intermediate extends Component {
   }
 }
 
-
 // VisibleTodoList container component
-
-
 const mapStateToTodoListProps = (state:State_Root, {params})=>{ // does not depend on the state shape anymore ...
   const filter=params.filter || 'all';
   return { todos: getVisibleTodos(state, filter),
