@@ -30,13 +30,16 @@ const fetchedIDsByFilterMap_Reducer_Factory= (filter:State_Filter)=> {
     }
   };
   const isFetching = (state=false, action:A_TODO) =>{
-      if (action.filter !== filter){
-        return state;
-      }
       switch (action.type){
         case Actions.REQUEST_TODOS:
+          if (action.filter !== filter){
+            return state;
+          }
           return true;
         case Actions.RECIEVE_TODOS:
+          if (action.filter !== filter){
+            return state;
+          }
           return false;
         default:
           return state;
@@ -58,4 +61,6 @@ const idsByFilterReducer = (state:State_Filter_To_TodoIDs_Map, action:A_TODO) : 
 export default idsByFilterReducer
 
 export const getIds = (state:State_FetchedIDs ) :TodoID[]=> state.ids;
-export const getIsFetching = (state:State_FetchedIDs)=> state.isFetching;
+export const getIsFetching = (state:State_FetchedIDs)=> {
+//  console.log('getIsFetching: '+state);
+  return state.isFetching;}

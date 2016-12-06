@@ -10,7 +10,7 @@ import type { Store } from 'redux';
 export type StoreType=Store <State_Root, A_TODO>
 const thunk = (store) => (next) => (action)=>
   typeof action === 'function' ?
-  action(store.dispatch): next(action);
+  action(store.dispatch,store.getState): next(action);
 
 const configureStore = () =>{
   const middlewares=[thunk,createLogger()];

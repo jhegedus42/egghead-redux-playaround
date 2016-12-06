@@ -5,6 +5,7 @@ import type {State_Todo,TodoID} from './state/todo.js'
 import {v4} from 'node-uuid';
 import *  as fakeDB from '../fakeDB';
 import type {State_Filter} from './idsByFilterMap_Reducer.js'
+import {getIsFetching} from './root_Reducer'
 
 // all actions
 
@@ -54,9 +55,14 @@ const mk_RECIEVE_TODOS : ty_mk_RECEIVE_TODOS= (filter,
 // fetch todos action
 
 export type ty_fetchTodos =(filter:State_Filter) =>
-    (dispatch:Function)=> Promise<void>
+    (dispatch:Function, getState:Function)=> ?Promise<void>
 
-export const fetchTodos : ty_fetchTodos =(filter)=>(dispatch)=> {
+export const fetchTodos : ty_fetchTodos =(filter)=>(dispatch, getState:Function)=> {
+  const s=getState();
+  const f =getIsFetching(s,filter);
+  if (f){
+    console.log('we are already fetching!');
+    return;} // avoid race conditions
   dispatch(requestTodos(filter));
   return fakeDB.fetchTodos(filter).then(response =>
      dispatch(mk_RECIEVE_TODOS(filter,response)));

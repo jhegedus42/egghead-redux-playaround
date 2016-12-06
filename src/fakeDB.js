@@ -20,7 +20,7 @@ const fakeDB:State_Todo[]=getAllTodos(fdb);
 const delay = (ms) => new Promise(resolve=> setTimeout(resolve,ms));
 
 export const fetchTodos = (filter:State_Filter) :Promise<State_Todo[]> =>
-  delay(500).then(()=>{
+  delay(5000).then(()=>{
     switch (filter) {
       case 'all':
         return fakeDB;
