@@ -25,7 +25,8 @@ class Intermediate extends Component {
   };
   fetchData(){
       const {filter, fetchTodos} = this.props;
-        fetchTodos(filter);
+        fetchTodos(filter).then(()=>console.log('done!'));
+
     }
   componentDidMount(){
     this.fetchData();
